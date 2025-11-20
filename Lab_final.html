@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Event Registration</title>
+
+    <style>
+      body {
+        font-family: Arial;
+        background-color: #eef1f5;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 350px;
+        margin: auto;
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        text-align: center;
+        color: #2d3436;
+      }
+
+      label {
+        font-weight: bold;
+        color: #333;
+      }
+
+      input[type="text"],
+      input[type="email"] {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        border: 1px solid #b2bec3;
+        font-size: 14px;
+      }
+
+      input[type="text"]:focus,
+      input[type="email"]:focus {
+        border-color: #0984e3;
+        outline: none;
+      }
+
+      .error {
+        color: red;
+        font-size: 13px;
+        margin-bottom: 5px;
+      }
+
+      .success {
+        color: green;
+        font-size: 14px;
+        font-weight: bold;
+        margin-top: 10px;
+      }
+
+      .info {
+        color: #055160;
+        background: #e6f7f7;
+        padding: 8px;
+        border-radius: 6px;
+        font-size: 13px;
+        margin-top: 10px;
+      }
+
+      button {
+        width: 100%;
+        padding: 12px;
+        margin-top: 10px;
+        background-color: #0984e3;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 15px;
+      }
+
+      button:hover {
+        background-color: #075fa3;
+      }
+
+      #resetBtn {
+        background-color: #d63031;
+      }
+
+      #resetBtn:hover {
+        background-color: #b42020;
+      }
+
+      #statsPanel {
+        margin-top: 20px;
+        padding: 15px;
+        border: 1px solid #b2bec3;
+        border-radius: 5px;
+        display: none;
+        background-color: #fafafa;
+      }
+    </style>
+
+    <script>
+      let total = 0;
+      let virtualCount = 0;
+      let inPersonCount = 0;
+
+      function registerUser() {
+        let name = document.getElementById("fullname").value;
+        let email = document.getElementById("email").value;
+        let company = document.getElementById("company").value;
+        let attendance = document.querySelector(
+          'input[name="attend"]:checked'
+        );
+
+        let ok = true;
+        if (name.length < 6 || name.length > 100) {
+          document.getElementById("nameErr").innerHTML =
+            "Name must be between 6 and 100 characters.";
+          ok = false;
+        } else {
+          document.getElementById("nameErr").innerHTML = "";
+        }
+        const emailPattern =
+          /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+        if (!emailPattern.test(email)) {
+          document.getElementById("emailErr").innerHTML =
+            "Please enter a valid professional email address.";
+          ok = false;
+        } else {
+          document.getElementById("emailErr").innerHTML = "";
+        }
+        if (!attendance) {
+          document.getElementById("attendanceErr").innerHTML =
+            "Please select your attendance type.";
+          ok = false;
+        } else {
+          document.getElementById("attendanceErr").innerHTML = "";
+        }
+        if (ok) {
+          total++;
+
+          if (attendance.value === "Virtual") {
+            virtualCount++;
+          } else {
+            inPersonCount++;
+          }
+          document.getElementById("successMsg").innerHTML =
+            "Registration Successful!";
+        } else {
+          // Clear success message if something is wrong
+          document.getElementById("successMsg").innerHTML = "";
+        }
+        document.getElementById("resetInfo").innerHTML = "";
+      }
+
+      function toggleStats() {
+        const panel = document.getElementById("statsPanel");
+        const btn = document.getElementById("statsBtn");
+
+        if (panel.style.display === "none") {
+          panel.style.display = "block";
+          btn.innerText = "Hide Event Analytics";
+
+          document.getElementById("totalReg").innerText =
+            "Total Registrants: " + total;
+
+          document.getElementById("breakdown").innerText =
+            "Virtual: " + virtualCount + " | In-Person: " + inPersonCount;
+        } else {
+          panel.style.display = "none";
+          btn.innerText = "Show Event Analytics";
+        }
+      }
+      function resetAnalytics() {
+        total = 0;
+        virtualCount = 0;
+        inPersonCount = 0;
+
+        document.getElementById("statsPanel").style.display = "none";
+        document.getElementById("statsBtn").innerText = "Show Event Analytics";
+
+        document.getElementById("resetInfo").innerHTML =
+          "Event analytics has been reset.";
+
+        document.getElementById("successMsg").innerHTML = "";
+
+        document.getElementById("totalReg").innerText = "";
+        document.getElementById("breakdown").innerText = "";
+      }
+    </script>
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>Event Registration</h2>
+
+      <label>Full Name</label>
+      <input type="text" id="fullname" placeholder="Enter full name" />
+      <p id="nameErr" class="error"></p>
+
+      <label>Email</label>
+      <input type="email" id="email" placeholder="Enter email" />
+      <p id="emailErr" class="error"></p>
+
+      <label>Company/Institution (optional)</label>
+      <input type="text" id="company" placeholder="Enter company" />
+      <p></p>
+
+      <label>Attendance Type</label><br />
+      <input type="radio" name="attend" value="Virtual" /> Virtual<br />
+      <input type="radio" name="attend" value="In-Person" /> In-Person<br />
+      <p id="attendanceErr" class="error"></p>
+
+      <button onclick="registerUser()">Register</button>
+
+      <p id="successMsg" class="success"></p>
+
+      <button id="statsBtn" onclick="toggleStats()">
+        Show Event Analytics
+      </button>
+
+      <button id="resetBtn" onclick="resetAnalytics()">
+        Reset Event Analytics
+      </button>
+      <p id="resetInfo" class="info"></p>
+
+      <div id="statsPanel">
+        <p id="totalReg"></p>
+        <p id="breakdown"></p>
+      </div>
+    </div>
+  </body>
+</html>
